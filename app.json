@@ -2,7 +2,7 @@
   "expo": {
     "name": "CoffeeHouse Pro",
     "slug": "coffeehouse-pro",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -17,7 +17,8 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.maratique.coffeehouse"
+      "package": "com.maratique.coffeehouse",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"

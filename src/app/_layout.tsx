@@ -1,5 +1,27 @@
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { SQLiteProvider } from "expo-sqlite";
+import { ShopProvider } from "../store/ShopProvider";
+import { initialize } from "../data/shop";
+// Metro imports the bundled database as an asset identifier.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const databaseAsset = require("../../assets/database/coffeehouse.sqlite");
 export default function Layout() {
-  return <><StatusBar style="light" /><Stack screenOptions={{ headerShown: false }} /></>;
+  return (
+    <SQLiteProvider
+      databaseName="coffeehouse.sqlite"
+      assetSource={{ assetId: databaseAsset }}
+      onInit={initialize}
+    >
+      <ShopProvider>
+        <StatusBar style="light" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: "#17120E" },
+          }}
+        />
+      </ShopProvider>
+    </SQLiteProvider>
+  );
 }

@@ -32,7 +32,8 @@
     "android": "expo run:android",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
-    "doctor": "expo-doctor"
+    "doctor": "expo-doctor",
+    "test": "node --test tests/shop.test.cjs"
   },
   "private": true
 }

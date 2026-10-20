@@ -1,24 +1,23 @@
 {
   "expo": {
-    "name": "CoffeeHouse Pro",
-    "slug": "coffeehouse-pro",
-    "version": "1.1.0",
+    "name": "Ozon Coffee",
+    "slug": "ozon-coffee",
+    "version": "1.2.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "icon": "./assets/ozon-coffee-icon.png",
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#005BFF",
+        "foregroundImage": "./assets/ozon-coffee-adaptive.png",
+        "monochromeImage": "./assets/ozon-coffee-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.maratique.coffeehouse",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -28,6 +27,7 @@
       "expo-sqlite",
       "expo-asset"
     ],
-    "scheme": "coffeehouse"
+    "scheme": "coffeehouse",
+    "backgroundColor": "#F2F3F5"
   }
 }

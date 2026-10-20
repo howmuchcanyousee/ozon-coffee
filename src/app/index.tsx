@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Image,
-  ImageBackground,
   Pressable,
   ScrollView,
   Text,
@@ -10,9 +9,16 @@ import {
   View,
 } from "react-native";
 import { useShop } from "../store/ShopProvider";
-import { Button, Card, colors, photos, Screen, u } from "../components/ui";
+import {
+  Button,
+  Card,
+  colors,
+  Icon,
+  photos,
+  Screen,
+  u,
+} from "../components/ui";
 import { cents, money } from "../data/shop";
-
 export default function Catalog() {
   const shop = useShop();
   const [category, setCategory] = useState(0);
@@ -29,32 +35,65 @@ export default function Catalog() {
   );
   return (
     <Screen
-      title="Ваш кофейный момент"
-      subtitle="Любимый кофе и что-нибудь вкусное к нему"
+      title="Кофе и не только"
+      subtitle="Ваш любимый вкус — в пару касаний"
     >
-      <ImageBackground source={photos[1]} imageStyle={{ borderRadius: 20 }}>
+      <View style={u.search}>
+        <Icon name="search" size={21} />
+        <TextInput
+          accessibilityLabel="Поиск по меню"
+          placeholder="Искать в Ozon Coffee"
+          placeholderTextColor={colors.muted}
+          value={search}
+          onChangeText={setSearch}
+          style={u.searchInput}
+        />
+        {!!search && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Очистить поиск"
+            hitSlop={12}
+            onPress={() => setSearch("")}
+          >
+            <Text style={{ fontSize: 24, color: colors.muted }}>×</Text>
+          </Pressable>
+        )}
+      </View>
+      <View style={u.promo}>
+        <View style={{ flex: 1, paddingRight: 8 }}>
+          <Text style={u.promoLabel}>ВАШ КОФЕЙНЫЙ МОМЕНТ</Text>
+          <Text style={u.promoTitle}>
+            Сначала кофе.{"\n"}Потом всё остальное.
+          </Text>
+          <Text style={u.promoCaption}>
+            С собой или в кофейне — выбирайте вы
+          </Text>
+        </View>
         <View
           style={{
-            backgroundColor: "rgba(20,12,8,.6)",
-            padding: 22,
-            borderRadius: 20,
-            minHeight: 130,
+            width: 86,
+            height: 100,
             justifyContent: "center",
-            gap: 8,
+            alignItems: "center",
+            backgroundColor: "#2375FF",
+            borderRadius: 40,
+            transform: [{ rotate: "12deg" }],
           }}
         >
-          <Text style={u.heading}>Свежий кофе. Тёплые встречи.</Text>
-          <Text style={u.muted}>Выберите в меню — заберите в кофейне</Text>
+          <Icon name="cup" color="#FFF" size={68} />
+          <View
+            style={{
+              position: "absolute",
+              width: 23,
+              height: 23,
+              borderRadius: 12,
+              backgroundColor: colors.pink,
+              right: -2,
+              top: 0,
+            }}
+          />
         </View>
-      </ImageBackground>
-      <TextInput
-        accessibilityLabel="Поиск по меню"
-        placeholder="Найти напиток или десерт"
-        placeholderTextColor={colors.muted}
-        value={search}
-        onChangeText={setSearch}
-        style={u.input}
-      />
+      </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -68,12 +107,20 @@ export default function Catalog() {
             onPress={() => setCategory(Number(id))}
             style={[u.chip, category === id && u.chipActive]}
           >
-            <Text style={[u.chipText, category === id && { color: colors.bg }]}>
+            <Text style={[u.chipText, category === id && { color: "#FFF" }]}>
               {name}
             </Text>
           </Pressable>
         ))}
       </ScrollView>
+      <View style={u.row}>
+        <Text style={u.heading}>
+          {category
+            ? categories.find(([id]) => id === category)?.[1]
+            : "Выбирайте любимое"}
+        </Text>
+        <Text style={u.muted}>{items.length} позиций</Text>
+      </View>
       {!shop.ready && !shop.error && (
         <ActivityIndicator color={colors.accent} />
       )}
@@ -93,27 +140,26 @@ export default function Catalog() {
           return (
             <Card
               key={p.id_item}
-              style={{ width: "48%", flexGrow: 1, padding: 12 }}
+              style={{ width: "48%", flexGrow: 1, padding: 10, gap: 8 }}
             >
               <Image
                 source={photos[p.id_category] ?? photos[1]}
-                style={{ width: "100%", height: 110, borderRadius: 12 }}
+                style={u.productPhoto}
               />
-              <Text style={{ ...u.heading, fontSize: 18 }}>{p.name}</Text>
-              <Text style={u.muted}>{p.description}</Text>
-              <Text style={u.muted}>
+              <Text style={u.price}>{money(cents(p.price))}</Text>
+              <Text style={u.productTitle}>{p.name}</Text>
+              <Text style={u.productMeta}>{p.description}</Text>
+              <Text style={u.productMeta}>
                 {p.weight_grams} {p.id_category <= 2 ? "мл" : "г"}
               </Text>
-              <Text style={{ ...u.heading, color: colors.accent }}>
-                {money(cents(p.price))}
-              </Text>
+              <View style={{ flex: 1 }} />
               <Button
                 title={
                   !p.is_available
                     ? "Нет в наличии"
                     : qty
                       ? `В корзине: ${qty} · +`
-                      : "Добавить"
+                      : "В корзину"
                 }
                 disabled={shop.busy || !p.is_available || qty >= 99}
                 onPress={() => shop.quantity(p.id_item, qty + 1)}
@@ -123,7 +169,20 @@ export default function Catalog() {
         })}
       </View>
       {shop.ready && !items.length && (
-        <Text style={u.muted}>Ничего не нашли. Попробуйте другой запрос.</Text>
+        <Card>
+          <Text style={u.heading}>Ничего не нашлось</Text>
+          <Text style={u.muted}>
+            Попробуйте другое название или выберите другую категорию.
+          </Text>
+          <Button
+            title="Сбросить поиск"
+            secondary
+            onPress={() => {
+              setSearch("");
+              setCategory(0);
+            }}
+          />
+        </Card>
       )}
     </Screen>
   );

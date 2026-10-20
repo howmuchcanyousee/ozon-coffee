@@ -83,7 +83,7 @@ export default function Cart() {
                 onPress={() => shop.quantity(l.id_item, 0)}
                 style={{ paddingVertical: 10 }}
               >
-                <Text style={{ color: colors.muted }}>Удалить</Text>
+                <Text style={{ color: colors.pink }}>Удалить</Text>
               </Pressable>
             </Card>
           ))}
@@ -128,7 +128,7 @@ function Step({
         width: 46,
         height: 46,
         borderRadius: 14,
-        backgroundColor: colors.border,
+        backgroundColor: colors.paleBlue,
         alignItems: "center",
         justifyContent: "center",
         opacity: disabled ? 0.4 : 1,

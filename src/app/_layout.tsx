@@ -14,11 +14,11 @@ export default function Layout() {
       onInit={initialize}
     >
       <ShopProvider>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <Stack
           screenOptions={{
             headerShown: false,
-            contentStyle: { backgroundColor: "#17120E" },
+            contentStyle: { backgroundColor: "#F2F3F5" },
           }}
         />
       </ShopProvider>

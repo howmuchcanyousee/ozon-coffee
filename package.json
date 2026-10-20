@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@noble/hashes": "^2.4.0",
     "expo": "~57.0.0",
     "expo-asset": "~57.0.20",
     "expo-constants": "~57.0.22",
@@ -15,6 +16,9 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
+    "react-native-nitro-modules": "^0.37.1",
+    "react-native-quick-base64": "^3.0.1",
+    "react-native-quick-crypto": "^1.1.8",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
@@ -33,7 +37,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
     "doctor": "expo-doctor",
-    "test": "node --test tests/shop.test.cjs"
+    "test": "node --test tests/*.test.cjs"
   },
   "private": true
 }

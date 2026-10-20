@@ -16,10 +16,10 @@ export default function OrderDetails() {
   const [error, setError] = useState(false);
   const order = shop.orders.find((o) => o.id_order === Number(id));
   useEffect(() => {
-    orderLines(db, Number(id))
+    orderLines(db, Number(id), shop.owner)
       .then(setLines)
       .catch(() => setError(true));
-  }, [db, id]);
+  }, [db, id, shop.owner]);
   return (
     <Screen
       title={created ? "Заказ оформлен!" : `Заказ №${id}`}

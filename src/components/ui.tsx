@@ -36,7 +36,7 @@ export function Icon({
   color = colors.accent,
   size = 24,
 }: {
-  name: "menu" | "cart" | "orders" | "search" | "cup";
+  name: "menu" | "cart" | "orders" | "search" | "cup" | "user";
   color?: string;
   size?: number;
 }) {
@@ -68,6 +68,11 @@ export function Icon({
         <>
           <Path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" />
           <Path d="M9 8h6M9 12h6" />
+        </>
+      ) : name === "user" ? (
+        <>
+          <Circle cx={12} cy={7} r={4} />
+          <Path d="M4 21v-2a8 8 0 0 1 16 0v2" />
         </>
       ) : name === "search" ? (
         <>
@@ -163,7 +168,13 @@ export function Screen({
       {footer && <View style={u.footer}>{footer}</View>}
       <SafeAreaView edges={["bottom"]} style={u.nav}>
         <View style={u.navRow}>
-          <Nav title="Меню" to="/" icon="menu" selected={path === "/"} />
+          <Nav title="Главная" to="/" icon="menu" selected={path === "/"} />
+          <Nav
+            title="Каталог"
+            to="/catalog"
+            icon="cup"
+            selected={path === "/catalog"}
+          />
           <Nav
             title="Корзина"
             to="/cart"
@@ -172,10 +183,16 @@ export function Screen({
             selected={path === "/cart" || path === "/checkout"}
           />
           <Nav
-            title="Мои заказы"
+            title="Заказы"
             to="/orders"
             icon="orders"
             selected={path.startsWith("/order")}
+          />
+          <Nav
+            title="Профиль"
+            to="/account"
+            icon="user"
+            selected={path === "/account"}
           />
         </View>
       </SafeAreaView>
@@ -190,8 +207,8 @@ function Nav({
   selected,
 }: {
   title: string;
-  to: "/" | "/cart" | "/orders";
-  icon: "menu" | "cart" | "orders";
+  to: "/" | "/cart" | "/orders" | "/catalog" | "/account";
+  icon: "menu" | "cart" | "orders" | "cup" | "user";
   count?: number;
   selected: boolean;
 }) {
@@ -238,7 +255,10 @@ export function Empty({ title, text }: { title: string; text: string }) {
       <Text style={u.heading}>{title}</Text>
       <Text style={[u.muted, { textAlign: "center" }]}>{text}</Text>
       <View style={{ alignSelf: "stretch", marginTop: 8 }}>
-        <Button title="Выбрать в меню" onPress={() => router.navigate("/")} />
+        <Button
+          title="Выбрать в меню"
+          onPress={() => router.navigate("/catalog")}
+        />
       </View>
     </Card>
   );
@@ -412,3 +432,52 @@ export const u = StyleSheet.create({
   productMeta: { color: colors.muted, fontSize: 12, lineHeight: 17 },
   labelPink: { color: colors.pink, fontSize: 11, fontWeight: "700" },
 });
+
+export function Tabs({
+  options,
+  value,
+  onChange,
+}: {
+  options: readonly (readonly [string, string])[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{ gap: 8 }}
+    >
+      {options.map(([id, label]) => (
+        <Pressable
+          key={id}
+          accessibilityRole="button"
+          accessibilityState={{ selected: id === value }}
+          onPress={() => onChange(id)}
+          style={[u.chip, id === value && u.chipActive]}
+        >
+          <Text style={[u.chipText, id === value && { color: "#FFF" }]}>
+            {label}
+          </Text>
+        </Pressable>
+      ))}
+    </ScrollView>
+  );
+}
+export function RequireAccount({ children }: { children: React.ReactNode }) {
+  const shop = useShop();
+  if (!shop.user)
+    return (
+      <Card>
+        <Text style={u.heading}>Войдите для бронирования</Text>
+        <Text style={u.muted}>
+          Бронь будет сохранена в вашем профиле на этом устройстве.
+        </Text>
+        <Button
+          title="Войти или зарегистрироваться"
+          onPress={() => router.push("/account")}
+        />
+      </Card>
+    );
+  return <>{children}</>;
+}

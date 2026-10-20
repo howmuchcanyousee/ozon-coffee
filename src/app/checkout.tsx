@@ -12,7 +12,7 @@ import { Button, Card, colors, Empty, Screen, u } from "../components/ui";
 import { money, totalCents } from "../data/shop";
 export default function Checkout() {
   const shop = useShop();
-  const [name, setName] = useState("");
+  const [name, setName] = useState(shop.user?.name ?? "");
   const [phone, setPhone] = useState("");
   const [comment, setComment] = useState("");
   const [mode, setMode] = useState("С собой");

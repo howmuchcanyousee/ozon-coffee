@@ -1,63 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { DatabaseSync } = require("node:sqlite");
-const fs = require("node:fs");
-const path = require("node:path");
-const Module = require("node:module");
-const ts = require("typescript");
-const compiled = ts.transpileModule(
-  fs.readFileSync(path.join(__dirname, "../src/data/shop.ts"), "utf8"),
-  {
-    compilerOptions: {
-      module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ES2022,
-    },
-  },
-).outputText;
-const m = new Module(__filename);
-m._compile(compiled, __filename);
-const shop = m.exports;
-function adapter(raw) {
-  return {
-    execAsync: async (sql) => raw.exec(sql),
-    runAsync: async (sql, ...args) => {
-      const r = raw.prepare(sql).run(...args);
-      return { ...r, lastInsertRowId: Number(r.lastInsertRowid) };
-    },
-    getFirstAsync: async (sql, ...args) => raw.prepare(sql).get(...args),
-    getAllAsync: async (sql, ...args) => raw.prepare(sql).all(...args),
-    withExclusiveTransactionAsync: async (fn) => {
-      raw.exec("BEGIN IMMEDIATE");
-      try {
-        await fn(adapter(raw));
-        raw.exec("COMMIT");
-      } catch (e) {
-        raw.exec("ROLLBACK");
-        throw e;
-      }
-    },
-  };
-}
-async function fixture(fn) {
-  const testRoot = path.resolve(__dirname, "../../work/test-databases");
-  fs.mkdirSync(testRoot, { recursive: true });
-  const dir = fs.mkdtempSync(path.join(testRoot, "case-"));
-  const file = path.join(dir, "shop.sqlite");
-  fs.copyFileSync(
-    path.join(__dirname, "../assets/database/coffeehouse.sqlite"),
-    file,
-  );
-  const raw = new DatabaseSync(file);
-  try {
-    const db = adapter(raw);
-    await shop.initialize(db);
-    await fn(db, raw, file);
-  } finally {
-    raw.close();
-    if (!path.resolve(dir).startsWith(testRoot + path.sep)) throw new Error("Unsafe test cleanup path");
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-}
+const { shop, fixture, adapter } = require("./helpers.cjs");
 const input = {
   name: "Тест",
   phone: "",

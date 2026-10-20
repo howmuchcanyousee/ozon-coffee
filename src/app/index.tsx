@@ -1,189 +1,105 @@
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
+import { router, type Href } from "expo-router";
+import { Card, colors, Icon, Screen, u } from "../components/ui";
 import { useShop } from "../store/ShopProvider";
-import {
-  Button,
-  Card,
-  colors,
-  Icon,
-  photos,
-  Screen,
-  u,
-} from "../components/ui";
-import { cents, money } from "../data/shop";
-export default function Catalog() {
+const sections: {
+  title: string;
+  description: string;
+  path: Href;
+  image: number;
+}[] = [
+  {
+    title: "Меню кофейни",
+    description: "Всё меню · Категории · Популярное",
+    path: "/catalog",
+    image: require("../../assets/coffee/hero_menu.png"),
+  },
+  {
+    title: "Заказы",
+    description: "Мои заказы · Статусы · Оплата",
+    path: "/orders",
+    image: require("../../assets/coffee/hero_orders.png"),
+  },
+  {
+    title: "Бронирования",
+    description: "Новая бронь · Мои брони · Отменённые",
+    path: "/bookings",
+    image: require("../../assets/coffee/hero_booking.png"),
+  },
+  {
+    title: "Регистрация",
+    description: "Вход · Регистрация · Профиль",
+    path: "/account",
+    image: require("../../assets/coffee/hero_auth.png"),
+  },
+  {
+    title: "Статистика",
+    description: "Продажи · Сумма заказов · Статусы",
+    path: "/stats",
+    image: require("../../assets/coffee/hero_stats.png"),
+  },
+  {
+    title: "О нас",
+    description: "О кофейне · Контакты · Как заказать",
+    path: "/about",
+    image: require("../../assets/coffee/hero_about.png"),
+  },
+  {
+    title: "Корзина",
+    description: "Ваш выбор, количество и оформление",
+    path: "/cart",
+    image: require("../../assets/coffee/hero_clients.png"),
+  },
+];
+export default function Home() {
   const shop = useShop();
-  const [category, setCategory] = useState(0);
-  const [search, setSearch] = useState("");
-  const categories = [
-    ...new Map(shop.products.map((p) => [p.id_category, p.category])).entries(),
-  ];
-  const items = shop.products.filter(
-    (p) =>
-      (!category || p.id_category === category) &&
-      `${p.name} ${p.description}`
-        .toLocaleLowerCase("ru")
-        .includes(search.trim().toLocaleLowerCase("ru")),
-  );
   return (
     <Screen
-      title="Кофе и не только"
-      subtitle="Ваш любимый вкус — в пару касаний"
+      title={shop.user ? `Привет, ${shop.user.name}!` : "Добро пожаловать!"}
+      subtitle="Кофе, десерты и тёплые встречи в Ozon Coffee"
     >
-      <View style={u.search}>
-        <Icon name="search" size={21} />
-        <TextInput
-          accessibilityLabel="Поиск по меню"
-          placeholder="Искать в Ozon Coffee"
-          placeholderTextColor={colors.muted}
-          value={search}
-          onChangeText={setSearch}
-          style={u.searchInput}
-        />
-        {!!search && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Очистить поиск"
-            hitSlop={12}
-            onPress={() => setSearch("")}
-          >
-            <Text style={{ fontSize: 24, color: colors.muted }}>×</Text>
-          </Pressable>
-        )}
-      </View>
-      <View style={u.promo}>
-        <View style={{ flex: 1, paddingRight: 8 }}>
-          <Text style={u.promoLabel}>ВАШ КОФЕЙНЫЙ МОМЕНТ</Text>
-          <Text style={u.promoTitle}>
-            Сначала кофе.{"\n"}Потом всё остальное.
-          </Text>
-          <Text style={u.promoCaption}>
-            С собой или в кофейне — выбирайте вы
-          </Text>
-        </View>
-        <View
-          style={{
-            width: 86,
-            height: 100,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#2375FF",
-            borderRadius: 40,
-            transform: [{ rotate: "12deg" }],
-          }}
-        >
-          <Icon name="cup" color="#FFF" size={68} />
-          <View
-            style={{
-              position: "absolute",
-              width: 23,
-              height: 23,
-              borderRadius: 12,
-              backgroundColor: colors.pink,
-              right: -2,
-              top: 0,
-            }}
-          />
-        </View>
-      </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 8 }}
-      >
-        {[[0, "Всё меню"], ...categories].map(([id, name]) => (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ selected: category === id }}
-            key={id}
-            onPress={() => setCategory(Number(id))}
-            style={[u.chip, category === id && u.chipActive]}
-          >
-            <Text style={[u.chipText, category === id && { color: "#FFF" }]}>
-              {name}
+      <Card style={{ backgroundColor: colors.accent }}>
+        <View style={u.row}>
+          <View style={{ flex: 1, gap: 8 }}>
+            <Text style={{ ...u.heading, color: "#FFF", fontSize: 23 }}>
+              Ваш кофейный момент
             </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-      <View style={u.row}>
-        <Text style={u.heading}>
-          {category
-            ? categories.find(([id]) => id === category)?.[1]
-            : "Выбирайте любимое"}
-        </Text>
-        <Text style={u.muted}>{items.length} позиций</Text>
-      </View>
-      {!shop.ready && !shop.error && (
-        <ActivityIndicator color={colors.accent} />
-      )}
-      {!!shop.error && (
-        <Card>
-          <Text style={u.text}>Не удалось загрузить меню.</Text>
-          <Button
-            title="Повторить"
-            onPress={() => shop.refresh().catch(() => {})}
-          />
-        </Card>
-      )}
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-        {items.map((p) => {
-          const qty =
-            shop.cart.find((l) => l.id_item === p.id_item)?.quantity ?? 0;
-          return (
-            <Card
-              key={p.id_item}
-              style={{ width: "48%", flexGrow: 1, padding: 10, gap: 8 }}
-            >
+            <Text style={{ ...u.muted, color: "#DFEAFF" }}>
+              Выберите любимое — с собой или в кофейне
+            </Text>
+          </View>
+          <Icon name="cup" color="#FFF" size={55} />
+        </View>
+      </Card>
+      {!shop.ready ? (
+        <Text style={u.muted}>{shop.error || "Загружаем меню…"}</Text>
+      ) : null}
+      {sections.map((section) => (
+        <Pressable
+          key={section.title}
+          accessibilityRole="button"
+          accessibilityLabel={section.title}
+          onPress={() => router.push(section.path)}
+        >
+          <Card>
+            <View style={u.row}>
               <Image
-                source={photos[p.id_category] ?? photos[1]}
-                style={u.productPhoto}
+                source={section.image}
+                style={{ width: 66, height: 66, borderRadius: 13 }}
               />
-              <Text style={u.price}>{money(cents(p.price))}</Text>
-              <Text style={u.productTitle}>{p.name}</Text>
-              <Text style={u.productMeta}>{p.description}</Text>
-              <Text style={u.productMeta}>
-                {p.weight_grams} {p.id_category <= 2 ? "мл" : "г"}
-              </Text>
-              <View style={{ flex: 1 }} />
-              <Button
-                title={
-                  !p.is_available
-                    ? "Нет в наличии"
-                    : qty
-                      ? `В корзине: ${qty} · +`
-                      : "В корзину"
-                }
-                disabled={shop.busy || !p.is_available || qty >= 99}
-                onPress={() => shop.quantity(p.id_item, qty + 1)}
-              />
-            </Card>
-          );
-        })}
-      </View>
-      {shop.ready && !items.length && (
-        <Card>
-          <Text style={u.heading}>Ничего не нашлось</Text>
-          <Text style={u.muted}>
-            Попробуйте другое название или выберите другую категорию.
-          </Text>
-          <Button
-            title="Сбросить поиск"
-            secondary
-            onPress={() => {
-              setSearch("");
-              setCategory(0);
-            }}
-          />
-        </Card>
-      )}
+              <View style={{ flex: 1, gap: 7 }}>
+                <Text style={u.heading}>{section.title}</Text>
+                <Text style={u.muted}>{section.description}</Text>
+              </View>
+              <Text style={{ fontSize: 26, color: colors.accent }}>›</Text>
+            </View>
+          </Card>
+        </Pressable>
+      ))}
+      <Text style={u.muted}>
+        Учебная кофейня. Аккаунты, заказы и бронирования хранятся на этом
+        устройстве.
+      </Text>
     </Screen>
   );
 }

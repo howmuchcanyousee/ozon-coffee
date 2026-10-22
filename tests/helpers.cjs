@@ -39,7 +39,7 @@ function adapter(raw) {
   };
 }
 async function fixture(fn, before) {
-  const root = path.resolve(__dirname, "../../work/test-databases");
+  const root = path.resolve(__dirname, "../work/test-databases");
   fs.mkdirSync(root, { recursive: true });
   const dir = fs.mkdtempSync(path.join(root, "case-"));
   const file = path.join(dir, "shop.sqlite");
@@ -61,3 +61,4 @@ async function fixture(fn, before) {
   }
 }
 module.exports = { load, shop, adapter, fixture };
+

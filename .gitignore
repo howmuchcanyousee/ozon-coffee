@@ -39,3 +39,15 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Local tools and generated deliverables
+/build/
+/work/
+AGENTS.md
+*.docx
+*.pdf
+*.rar
+*.apk
+*.aab
+*.sqlite-wal
+*.sqlite-shm
